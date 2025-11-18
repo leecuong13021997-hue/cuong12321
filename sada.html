@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Điều Khiển LED Firebase</title>
+
+    <!-- Firebase App -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            background: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+        }
+        .card {
+            background: white;
+            width: 320px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        button {
+            width: 120px;
+            padding: 12px;
+            font-size: 17px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+        }
+        .on { background: #4CAF50; color: white; }
+        .off { background: #e74c3c; color: white; }
+        .status {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Điều Khiển LED</h2>
+        <button class="on" onclick="setLED(true)">BẬT</button>
+        <button class="off" onclick="setLED(false)">TẮT</button>
+        <div class="status" id="ledStatus">Đang tải...</div>
+    </div>
+
+    <script>
+        // ========== CẬP NHẬT THÔNG TIN FIREBASE TẠI ĐÂY ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzNqBnE76z_3GRZAoX6QD_VwJMGoSHmPQ",                              // Thay bằng API Key của bạn
+            authDomain: "ledesp32-94612.firebaseapp.com",       // Thay projectId
+            databaseURL: "https://ledesp32-94612-default-rtdb.asia-southeast1.firebasedatabase.app", // từ bạn cung cấp
+            projectId: "ledesp32-94612",                         // ví dụ, bạn kiểm tra trong console
+            storageBucket: "ledesp32-94612.appspot.com",        // tùy nếu dùng storage
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const ledRef = db.ref("ledStatus"); // đồng bộ với ESP32
+
+        function setLED(state) {
+            ledRef.set(state);
+        }
+
+        ledRef.on("value", snap => {
+            const val = snap.val();
+            document.getElementById("ledStatus").innerText = val ? "LED: BẬT" : "LED: TẮT";
+        });
+    </script>
+</body>
+</html>
