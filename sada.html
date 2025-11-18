@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Điều khiển LED ESP32 qua Firebase</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      font-size: 25px;
+      padding: 15px 40px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+    }
+    .on { background-color: #4CAF50; color: white; }
+    .off { background-color: #f44336; color: white; }
+    #status {
+      margin-top: 30px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Điều khiển LED ESP32</h1>
+
+  <button class="on" onclick="setLED(true)">BẬT LED</button>
+  <button class="off" onclick="setLED(false)">TẮT LED</button>
+
+  <p id="status">Đang tải trạng thái...</p>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+
+  <script>
+    // CẤU HÌNH FIREBASE CỦA BẠN (thay bằng của bạn)
+    const firebaseConfig = {
+      databaseURL: "https://ledesp32-94612-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Hàm bật / tắt LED
+    function setLED(value) {
+      firebase.database().ref("ledStatus").set(value);
+    }
+
+    // Theo dõi trạng thái ledStatus realtime
+    firebase.database().ref("ledStatus").on("value", (snapshot) => {
+      const value = snapshot.val();
+      document.getElementById("status").innerHTML =
+        "LED hiện tại: <b style='color:" + (value ? "green" : "red") + "'>" +
+        (value ? "ON" : "OFF") + "</b>";
+    });
+  </script>
+
+</body>
+</html>
